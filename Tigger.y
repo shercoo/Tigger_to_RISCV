@@ -106,10 +106,26 @@ Expression :
     printf("\tli\t\t%s,%d\n",$1,$3);
 }
 |REG '[' NUMBER ']' '=' REG{
-    printf("\tsw\t\t%s,%d(%s)\n",$6,$3,$1);
+    int num=$3;
+    if(num>=-2048&&num<2047){
+        printf("\tsw\t\t%s,%d(%s)\n",$6,$3,$1);
+    }
+    else{
+        printf("\tli\t\ts0,%d\n",num);
+        printf("\tadd \ts0,s0,%s\n",$1);
+        printf("\tsw\t\t%s,0(s0)\n",$6);
+    }
 }
 |REG '=' REG '[' NUMBER ']'{
-    printf("\tlw\t\t%s,%d(%s)\n",$1,$5,$3);
+    int num=$5;
+    if(num>=-2048&&num<2047){
+        printf("\tlw\t\t%s,%d(%s)\n",$1,$5,$3);
+    }
+    else{
+        printf("\tli\t\ts0,%d\n",num);
+        printf("\tadd \ts0,s0,%s\n",$3);
+        printf("\tlw\t\t%s,0(s0)\n",$1);
+    }
 }
 |IF REG BinOP REG GOTO LABEL{
     string op=$3;
@@ -130,17 +146,40 @@ Expression :
     printf("\tret\n");
 }
 |STORE REG NUMBER{
-    printf("\tsw\t\t%s,%d(sp)\n",$2,$3*4);
+    int num=$3*4;
+    if(num>=-2048&&num<2047){
+        printf("\tsw\t\t%s,%d(sp)\n",$2,num);
+    }
+    else{
+        printf("\tli\t\ts0,%d\n",num);
+        printf("\tadd \ts0,s0,sp\n");
+        printf("\tsw\t\t%s,0(s0)\n",$2);
+    }
 }
 |LOAD NUMBER REG{
-    printf("\tlw\t\t%s,%d(sp)\n",$3,$2*4);
+    int num=$2*4;
+    if(num>=-2048&&num<2047){
+        printf("\tlw\t\t%s,%d(sp)\n",$3,num);
+    }
+    else{
+        printf("\tli\t\ts0,%d\n",num);
+        printf("\tadd \ts0,s0,sp\n");
+        printf("\tlw\t\t%s,0(s0)\n",$3);
+    }
 }
 |LOAD VAR REG{
     printf("\tlui\t\t%s,%%hi(%s)\n",$3,$2);
     printf("\tlw\t\t%s,%%lo(%s)(%s)\n",$3,$2,$3);
 }
 |LOADADDR NUMBER REG{
-    printf("\taddi\t%s,sp,%d\n",$3,$2);
+    int num=$2*4;
+    if(num>=-2048&&num<2047){
+        printf("\taddi\t%s,sp,%d\n",$3,num);
+    }
+    else{
+        printf("\tli\t\ts0,%d\n",num);
+        printf("\tadd \t%s,s0,sp\n",$3);
+    }
 }
 |LOADADDR VAR REG{
     printf("\tla\t\t%s,%s\n",$3,$2);
