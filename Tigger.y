@@ -212,8 +212,8 @@ UnaryOP:
 
 int main(int argc,char **argv)
 {
-        freopen(argv[3], "r", stdin);
-        freopen(argv[5], "w", stdout);
+        freopen(argv[2], "r", stdin);
+        freopen(argv[4], "w", stdout);
         //yydebug=1;
         inst["+"]="add";
         inst["-"]="sub";
@@ -224,9 +224,9 @@ int main(int argc,char **argv)
         inst[">"]="sgt";
         inst["<="]="sgt";
         inst[">="]="slt";
-        inst["||"]="slt";
-        inst["!="]="slt";
-        inst["=="]="slt";
+        inst["||"]="or";
+        inst["!="]="xor";
+        inst["=="]="xor";
 
         ex["<="]="seqz";
         ex[">="]="seqz";
