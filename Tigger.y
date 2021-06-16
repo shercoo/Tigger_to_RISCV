@@ -73,14 +73,14 @@ Expression :
  REG '=' REG BinOP REG{
     string op=$4;
     if(op=="&&"){
-        printf("\tsnez\t%s,%s\n",$1,$3);
-        printf("\tsnez\ts0,%s\n",$5);
-        printf("\tand \t%s,%s,s0\n",$1,$1);
+        printf("\tsnez\t%s, %s\n",$1,$3);
+        printf("\tsnez\ts0, %s\n",$5);
+        printf("\tand \t%s, %s, s0\n",$1,$1);
     }
     else{
-        printf("\t%s\t%s,%s,%s\n",inst[op].c_str(),$1,$3,$5);
+        printf("\t%s\t%s, %s, %s\n",inst[op].c_str(),$1,$3,$5);
         if(op.size()>1){
-            printf("\t%s\t%s,%s\n",ex[op].c_str(),$1,$1);
+            printf("\t%s\t%s, %s\n",ex[op].c_str(),$1,$1);
         }
     }
  }
@@ -88,48 +88,48 @@ Expression :
     string op=$4;
     int num=$5;
     if((op=="+"||op=="<")&&num>=-2048&&num<2047){
-        printf("\t%si\t%s,%s,%d\n",inst[op].c_str(),$1,$3,num);
+        printf("\t%si\t%s, %s, %d\n",inst[op].c_str(),$1,$3,num);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\t%s\t%s,%s,s0\n",inst[op].c_str(),$1,$3);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\t%s\t%s, %s, s0\n",inst[op].c_str(),$1,$3);
     }
 }
 |REG '=' UnaryOP REG{
     string op=$3;
-    printf("\t%s\t%s,%s\n",ex[op].c_str(),$1,$4);
+    printf("\t%s\t%s, %s\n",ex[op].c_str(),$1,$4);
 }
 |REG '=' REG{
-    printf("\tmv\t\t%s,%s\n",$1,$3);
+    printf("\tmv\t\t%s, %s\n",$1,$3);
 }
 |REG '=' NUMBER{
-    printf("\tli\t\t%s,%d\n",$1,$3);
+    printf("\tli\t\t%s, %d\n",$1,$3);
 }
 |REG '[' NUMBER ']' '=' REG{
     int num=$3;
     if(num>=-2048&&num<2047){
-        printf("\tsw\t\t%s,%d(%s)\n",$6,$3,$1);
+        printf("\tsw\t\t%s, %d(%s)\n",$6,$3,$1);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\tadd \ts0,s0,%s\n",$1);
-        printf("\tsw\t\t%s,0(s0)\n",$6);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0,%s\n",$1);
+        printf("\tsw\t\t%s, 0(s0)\n",$6);
     }
 }
 |REG '=' REG '[' NUMBER ']'{
     int num=$5;
     if(num>=-2048&&num<2047){
-        printf("\tlw\t\t%s,%d(%s)\n",$1,$5,$3);
+        printf("\tlw\t\t%s, %d(%s)\n",$1,$5,$3);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\tadd \ts0,s0,%s\n",$3);
-        printf("\tlw\t\t%s,0(s0)\n",$1);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0,%s\n",$3);
+        printf("\tlw\t\t%s, 0(s0)\n",$1);
     }
 }
 |IF REG BinOP REG GOTO LABEL{
     string op=$3;
-    printf("\t%s\t%s,%s,.%s\n",branch[op].c_str(),$2,$4,$6);
+    printf("\t%s\t%s, %s, .%s\n",branch[op].c_str(),$2,$4,$6);
 }
 |GOTO LABEL{
     printf("\tj\t\t.%s\n",$2);
@@ -141,48 +141,48 @@ Expression :
     printf("\tcall\t%s\n",$2+2);
 }
 |RETURN{
-    printf("\tlw\t\tra,%d(sp)\n",STK-4);
-    printf("\taddi\tsp,sp,%d\n",STK);
+    printf("\tlw\t\tra, %d(sp)\n",STK-4);
+    printf("\taddi\tsp, sp, %d\n",STK);
     printf("\tret\n");
 }
 |STORE REG NUMBER{
     int num=$3*4;
     if(num>=-2048&&num<2047){
-        printf("\tsw\t\t%s,%d(sp)\n",$2,num);
+        printf("\tsw\t\t%s, %d(sp)\n",$2,num);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\tadd \ts0,s0,sp\n");
-        printf("\tsw\t\t%s,0(s0)\n",$2);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0, sp\n");
+        printf("\tsw\t\t%s, 0(s0)\n",$2);
     }
 }
 |LOAD NUMBER REG{
     int num=$2*4;
     if(num>=-2048&&num<2047){
-        printf("\tlw\t\t%s,%d(sp)\n",$3,num);
+        printf("\tlw\t\t%s, %d(sp)\n",$3,num);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\tadd \ts0,s0,sp\n");
-        printf("\tlw\t\t%s,0(s0)\n",$3);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0, sp\n");
+        printf("\tlw\t\t%s, 0(s0)\n",$3);
     }
 }
 |LOAD VAR REG{
-    printf("\tlui\t\t%s,%%hi(%s)\n",$3,$2);
-    printf("\tlw\t\t%s,%%lo(%s)(%s)\n",$3,$2,$3);
+    printf("\tlui\t\t%s, %%hi(%s)\n",$3,$2);
+    printf("\tlw\t\t%s, %%lo(%s)(%s)\n",$3,$2,$3);
 }
 |LOADADDR NUMBER REG{
     int num=$2*4;
     if(num>=-2048&&num<2047){
-        printf("\taddi\t%s,sp,%d\n",$3,num);
+        printf("\taddi\t%s, sp, %d\n",$3,num);
     }
     else{
-        printf("\tli\t\ts0,%d\n",num);
-        printf("\tadd \t%s,s0,sp\n",$3);
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \t%s, s0, sp\n",$3);
     }
 }
 |LOADADDR VAR REG{
-    printf("\tla\t\t%s,%s\n",$3,$2);
+    printf("\tla\t\t%s, %s\n",$3, $2);
 }
 ;
 
