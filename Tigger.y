@@ -215,18 +215,18 @@ int main(int argc,char **argv)
         freopen(argv[3], "r", stdin);
         freopen(argv[5], "w", stdout);
         //yydebug=1;
-        inst["+"]="add ";
-        inst["-"]="sub ";
-        inst["*"]="mul ";
-        inst["/"]="div ";
-        inst["%"]="rem ";
-        inst["<"]="slt ";
-        inst[">"]="sgt ";
-        inst["<="]="sgt ";
-        inst[">="]="slt ";
-        inst["||"]="slt ";
-        inst["!="]="slt ";
-        inst["=="]="slt ";
+        inst["+"]="add";
+        inst["-"]="sub";
+        inst["*"]="mul";
+        inst["/"]="div";
+        inst["%"]="rem";
+        inst["<"]="slt";
+        inst[">"]="sgt";
+        inst["<="]="sgt";
+        inst[">="]="slt";
+        inst["||"]="slt";
+        inst["!="]="slt";
+        inst["=="]="slt";
 
         ex["<="]="seqz";
         ex[">="]="seqz";
@@ -234,7 +234,7 @@ int main(int argc,char **argv)
         ex["!="]="snez";
         ex["=="]="seqz";
 
-        ex["-"]="neg ";
+        ex["-"]="neg";
         ex["!"]="seqz";
 
         branch["<"]="blt ";
