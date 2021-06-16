@@ -8,6 +8,9 @@ int yylex(void);
 void yyerror(char*);
 extern int yydebug;
 using namespace std;
+void addi(string s1,string s2,int num);
+void sw(string s1,int num,string s2);
+void lw(string s1,int num,string s2);
 map<string,string> inst;
 map<string,string> ex;
 map<string,string> branch;
@@ -56,9 +59,9 @@ FunctionDef:
 \t.align\t2\n\
 \t.global\t%s\n\
 \t.type\t%s, @function\n\
-%s:\n\
-\taddi\tsp, sp, -%d\n\
-\tsw\t\tra, %d(sp)\n",$1+2,$1+2,$1+2,STK,STK-4);
+%s:\n",$1+2,$1+2,$1+2);
+    addi("sp","sp",-STK);
+    sw("ra",STK-4,"sp");
  }
  Expressions{}
  END FUNC{printf("\t.size\t%s, .-%s\n\n",$1+2,$1+2);}
@@ -112,7 +115,7 @@ Expression :
     }
     else{
         printf("\tli\t\ts0, %d\n",num);
-        printf("\tadd \ts0, s0,%s\n",$1);
+        printf("\tadd \ts0, s0, %s\n",$1);
         printf("\tsw\t\t%s, 0(s0)\n",$6);
     }
 }
@@ -123,7 +126,7 @@ Expression :
     }
     else{
         printf("\tli\t\ts0, %d\n",num);
-        printf("\tadd \ts0, s0,%s\n",$3);
+        printf("\tadd \ts0, s0, %s\n",$3);
         printf("\tlw\t\t%s, 0(s0)\n",$1);
     }
 }
@@ -141,8 +144,10 @@ Expression :
     printf("\tcall\t%s\n",$2+2);
 }
 |RETURN{
-    printf("\tlw\t\tra, %d(sp)\n",STK-4);
-    printf("\taddi\tsp, sp, %d\n",STK);
+    //printf("\tlw\t\tra, %d(sp)\n",STK-4);
+    //printf("\taddi\tsp, sp, %d\n",STK);
+    lw("ra",STK-4,"sp");
+    addi("sp","sp",STK);
     printf("\tret\n");
 }
 |STORE REG NUMBER{
@@ -209,6 +214,37 @@ UnaryOP:
 ;
 
 %%
+
+void addi(string s1,string s2,int num){
+    if(num>=-2048&&num<2047){
+        printf("\taddi\t%s, %s, %d\n",s1.c_str(),s2.c_str(),num);
+    }
+    else{
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd\t%s, %s, s0\n",s1.c_str(),s2.c_str());
+    }
+}
+void sw(string s1,int num,string s2){
+    if(num>=-2048&&num<2047){
+        printf("\tsw\t\t%s, %d(%s)\n",s1.c_str(),num,s2.c_str());
+    }
+    else{
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0, %s\n",s2.c_str());
+        printf("\tsw\t\t%s, 0(s0)\n",s1.c_str());
+    }
+}
+
+void lw(string s1,int num,string s2){
+    if(num>=-2048&&num<2047){
+        printf("\tlw\t\t%s, %d(%s)\n",s1.c_str(),num,s2.c_str());
+    }
+    else{
+        printf("\tli\t\ts0, %d\n",num);
+        printf("\tadd \ts0, s0, %s\n",s2.c_str());
+        printf("\tlw\t\t%s, 0(s0)\n",s1.c_str());
+    }
+}
 
 int main(int argc,char **argv)
 {
